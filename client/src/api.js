@@ -10,3 +10,6 @@ api.interceptors.request.use((config) => {
   if (token) config.headers.Authorization = `Bearer ${token}`
   return config
 })
+
+// Delete a perk by ID
+export const deletePerk = (id) => api.delete(`/perks/${id}`)

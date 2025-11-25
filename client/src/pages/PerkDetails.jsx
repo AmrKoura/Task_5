@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams, Link } from 'react-router-dom'
-import { api } from '../api'
+import { api, deletePerk } from '../api'
 
 // Category color schemes with gradient backgrounds and accent colors
 const categoryThemes = {
@@ -66,9 +66,25 @@ export default function PerkDetails() {
       })
   }, [id])
 
- // TODO 2: Implement delete functionality with a window confirm dialog 
+ // Delete functionality with confirmation dialog
   async function handleDelete() {
-   
+    // Show confirmation dialog
+    const confirmed = window.confirm(
+      `Are you sure you want to delete "${perk.title}"? This action cannot be undone.`
+    )
+    
+    // If user cancels, do nothing
+    if (!confirmed) return
+    
+    try {
+      // Call delete API
+      await deletePerk(id)
+      // Navigate back to perks list on success
+      nav('/perks')
+    } catch (err) {
+      // Show error message if deletion fails
+      setError(err?.response?.data?.message || 'Failed to delete perk')
+    }
   }
 
   if (loading) {
@@ -192,7 +208,7 @@ export default function PerkDetails() {
             Edit Perk
           </Link>
           <button
-            
+            onClick={handleDelete}
             className="btn bg-white border-2 border-red-200 text-red-600 hover:bg-red-50 font-semibold px-6 py-3 flex items-center gap-2"
           >
             <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>delete</span>
